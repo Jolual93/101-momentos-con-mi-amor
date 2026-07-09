@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>101 Momentos con Mi Amor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --rose: #e8547a;
+      --rose-light: #f28fa8;
+      --rose-pale: #fde8ef;
+      --rose-deep: #c0395a;
+      --cream: #fdf6f0;
+      --night: #1a0a12;
+      --text: #2d1420;
+      --text-muted: #8a6070;
+      --gold: #d4a96a;
+      --card-bg: #fff9fb;
+      --shadow: 0 8px 32px rgba(200,50,100,0.12);
+    }
+
+    .dark {
+      --rose: #f07090;
+      --rose-light: #f5a0b8;
+      --rose-pale: #2a1020;
+      --rose-deep: #ff8fad;
+      --cream: #120810;
+      --night: #fde8ef;
+      --text: #f5e0e8;
+      --text-muted: #c080a0;
+      --card-bg: #1e0f18;
+      --shadow: 0 8px 32px rgba(240,100,140,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* ---- CONFETTI ---- */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ---- HEADER ---- */
+    .header {
+      position: relative;
+      text-align: center;
+      padding: 40px 24px 20px;
+      overflow: hidden;
+    }
+
+    .header-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,84,122,0.15), transparent);
+      pointer-events: none;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 6vw, 52px);
+      color: var(--rose);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .header h1 span {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .header-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-weight: 300;
+    }
+
+    /* Cover photo */
+    .cover-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .cover-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--rose);
+      box-shadow: 0 4px 20px rgba(232,84,122,0.3);
+      cursor: pointer;
+    }
+
+    .cover-placeholder {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--rose-pale);
+      border: 3px dashed var(--rose-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 28px;
+      color: var(--rose);
+      transition: transform 0.2s;
+    }
+    .cover-placeholder:hover { transform: scale(1.05); }
+    .cover-placeholder span { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: 'DM Sans', sans-serif; }
+
+    .cover-wrap-inner { position: relative; display: inline-block; }
+    .cover-delete-btn {
+      position: absolute;
+      top: -2px; right: -2px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--rose-deep);
+      color: white;
+      border: 2px solid var(--cream);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: transform 0.15s;
+    }
+    .cover-delete-btn:hover { transform: scale(1.12); }
+
+    /* Dark mode toggle */
+    .topbar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid rgba(232,84,122,0.2);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s;
+    }
+    .icon-btn:hover { transform: scale(1.1); }
+
+    /* ---- GLOBAL PROGRESS ---- */
+    .global-progress {
+      max-width: 600px;
+      margin: 0 auto 28px;
+      padding: 0 24px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .progress-label strong { color: var(--rose); font-size: 15px; }
+
+    .progress-track {
+      height: 8px;
+      background: var(--rose-pale);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose), var(--gold));
+      border-radius: 999px;
+      transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ---- TABS ---- */
+    .tabs-wrapper {
+      padding: 0 20px;
+      margin-bottom: 24px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 0 8px;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 999px;
+      background: var(--card-bg);
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .tab:hover { border-color: var(--rose-light); color: var(--rose); }
+
+    .tab.active {
+      background: var(--rose);
+      color: white;
+      box-shadow: 0 4px 14px rgba(232,84,122,0.35);
+    }
+
+    .tab .tab-prog {
+      font-size: 10px;
+      opacity: 0.75;
+      display: block;
+      margin-top: 1px;
+    }
+
+    /* ---- CATEGORY PROGRESS ---- */
+    .cat-progress-bar {
+      max-width: 900px;
+      margin: 0 auto 20px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cat-progress-track {
+      flex: 1;
+      height: 6px;
+      background: var(--rose-pale);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .cat-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose), var(--gold));
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+
+    .cat-progress-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    /* ---- SURPRISE BUTTON ---- */
+    .surprise-area {
+      text-align: center;
+      margin-bottom: 28px;
+      padding: 0 24px;
+    }
+
+    .main-button {
+      border: none;
+      padding: 14px 32px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(200,57,90,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.2px;
+    }
+    .main-button:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(200,57,90,0.4); }
+    .main-button:active { transform: scale(0.97); }
+
+    /* Ruleta animation */
+    @keyframes roulette {
+      0%   { opacity: 0; transform: translateY(-10px) scale(0.9); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .moment-card {
+      display: inline-block;
+      margin-top: 18px;
+      background: var(--card-bg);
+      border: 1px solid rgba(232,84,122,0.2);
+      border-radius: 20px;
+      padding: 20px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: left;
+      box-shadow: var(--shadow);
+      animation: roulette 0.35s ease forwards;
+    }
+
+    .moment-card .mc-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--rose);
+      margin-bottom: 14px;
+    }
+
+    .mc-upload-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--rose-pale);
+      color: var(--rose-deep);
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .mc-upload-label:hover { background: rgba(232,84,122,0.15); }
+    .mc-upload-label input { display: none; }
+
+    /* ---- ALBUM ---- */
+    .album-wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px 32px;
+    }
+
+    .album {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .slot {
+      aspect-ratio: 1;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 2px dashed rgba(232,84,122,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .slot:hover { transform: scale(1.03); border-color: var(--rose-light); }
+
+    .slot.filled { border: none; }
+
+    .slot img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .slot:hover img { transform: scale(1.06); }
+
+    .slot-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .slot-number {
+      font-size: 22px;
+      font-weight: 700;
+      color: rgba(232,84,122,0.3);
+      font-family: 'Playfair Display', serif;
+    }
+
+    .slot-name {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .slot-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 40%, transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px;
+      gap: 4px;
+    }
+    .slot:hover .slot-overlay { opacity: 1; }
+
+    .slot-overlay-name {
+      color: white;
+      font-size: 10px;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+
+    .slot-overlay-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .ov-btn {
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(4px);
+      border: none;
+      color: white;
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+    .ov-btn:hover { background: rgba(255,255,255,0.45); }
+
+    .slot-date-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 9px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      backdrop-filter: blur(4px);
+    }
+
+    .slot-upload-label {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      display: block;
+    }
+    .slot-upload-label input { display: none; }
+
+    /* ---- LIST ---- */
+    .list-section {
+      max-width: 960px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+    }
+
+    .list-header {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--rose);
+      margin-bottom: 14px;
+    }
+
+    .moment-list {
+      columns: 2;
+      list-style: none;
+      gap: 8px;
+    }
+
+    .moment-list li {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      break-inside: avoid;
+    }
+
+    .moment-list li::before {
+      content: '○';
+      color: var(--rose-light);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .moment-list li.done {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    .moment-list li.done::before { content: '♥'; color: var(--rose); }
+
+    /* ---- MODAL FOTO ---- */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,0,6,0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal.active { display: flex; }
+
+    .modal-img-wrap {
+      position: relative;
+      max-width: min(92vw, 700px);
+    }
+
+    .modal img {
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      display: block;
+    }
+
+    .modal-meta {
+      color: white;
+      text-align: center;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--rose-light);
+    }
+
+    .modal-date {
+      font-size: 12px;
+      opacity: 0.6;
+      margin-top: 4px;
+    }
+
+    .modal-note {
+      font-size: 14px;
+      opacity: 0.85;
+      font-style: italic;
+      margin-top: 6px;
+      max-width: 500px;
+    }
+
+    .close-btn {
+      position: fixed;
+      top: 18px; right: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      line-height: 1;
+    }
+    .close-btn:hover { opacity: 1; }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 2px;
+    }
+    .modal-action-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 9px 20px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .modal-action-btn:hover { background: rgba(255,255,255,0.22); }
+    .modal-action-btn.danger {
+      background: rgba(224,60,60,0.18);
+      border-color: rgba(224,60,60,0.45);
+      color: #ff9a9a;
+    }
+    .modal-action-btn.danger:hover { background: rgba(224,60,60,0.32); }
+
+    /* ---- NOTE MODAL ---- */
+    .note-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,0,6,0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      padding: 24px;
+    }
+    .note-modal.active { display: flex; }
+
+    .note-box {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 28px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .note-box h3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--rose);
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    .note-box label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .note-box input[type="date"],
+    .note-box textarea {
+      width: 100%;
+      background: var(--rose-pale);
+      border: 1px solid rgba(232,84,122,0.2);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      resize: none;
+      transition: border-color 0.2s;
+    }
+    .note-box input[type="date"]:focus,
+    .note-box textarea:focus { border-color: var(--rose); }
+
+    .note-box textarea { height: 90px; margin-top: 0; }
+
+    .note-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-save {
+      flex: 1;
+      background: var(--rose);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--rose-deep); }
+
+    .btn-cancel {
+      background: var(--rose-pale);
+      color: var(--rose);
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ---- SLIDESHOW ---- */
+    .slideshow-modal {
+      position: fixed;
+      inset: 0;
+      background: #0a0008;
+      display: none;
+      z-index: 1002;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .slideshow-modal.active { display: flex; }
+
+    .ss-img {
+      max-width: min(90vw, 700px);
+      max-height: 70vh;
+      border-radius: 16px;
+      object-fit: contain;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      animation: ss-fade 0.8s ease;
+    }
+
+    @keyframes ss-fade {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .ss-meta {
+      text-align: center;
+      margin-top: 18px;
+      color: white;
+    }
+    .ss-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--rose-light); }
+    .ss-note  { font-size: 13px; opacity: 0.65; font-style: italic; margin-top: 4px; }
+
+    .ss-controls {
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .ss-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px 22px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .ss-btn:hover { background: rgba(255,255,255,0.2); }
+    .ss-close {
+      position: fixed;
+      top: 18px; right: 20px;
+      color: white; font-size: 28px; cursor: pointer; opacity: 0.6;
+    }
+    .ss-close:hover { opacity: 1; }
+
+    .ss-counter {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 600px) {
+      .album { grid-template-columns: repeat(2, 1fr); }
+      .moment-list { columns: 1; }
+      .note-box { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-bg"></div>
+  <div class="topbar">
+    <div class="icon-btn" id="darkToggle" title="Modo oscuro">🌙</div>
+    <div class="icon-btn" id="slideshowBtn" title="Ver recuerdos">▶️</div>
+  </div>
+  <h1>101 Momentos con<br><span>Mi Amor</span> 💖</h1>
+  <p class="header-sub">Un álbum de instantes que nunca olvidaremos</p>
+
+  <div class="cover-area">
+    <div id="coverWrap">
+      <div class="cover-placeholder" id="coverPlaceholder" onclick="document.getElementById('coverInput').click()">
+        📷<span>Portada</span>
+      </div>
+    </div>
+    <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="cargarPortada(event)">
+  </div>
+</div>
+
+<!-- GLOBAL PROGRESS -->
+<div class="global-progress">
+  <div class="progress-label">
+    <span>Progreso total</span>
+    <strong id="progressCount">0 / 101 momentos</strong>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrapper">
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<!-- CATEGORY PROGRESS -->
+<div class="cat-progress-bar">
+  <div class="cat-progress-track">
+    <div class="cat-progress-fill" id="catFill" style="width:0%"></div>
+  </div>
+  <div class="cat-progress-text" id="catText">0 / 0</div>
+</div>
+
+<!-- SURPRISE -->
+<div class="surprise-area">
+  <button class="main-button" onclick="sorprenderMomento()">
+    💖 Sorpréndeme con un momento
+  </button>
+  <div id="momentoActual"></div>
+</div>
+
+<!-- ALBUM -->
+<div class="album-wrapper">
+  <div class="album" id="album">
+    <p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;">Cargando recuerdos... 💫</p>
+  </div>
+</div>
+
+<!-- LIST -->
+<div class="list-section">
+  <div class="list-header">✨ Lista de momentos</div>
+  <ul class="moment-list" id="listaMomentos"></ul>
+</div>
+
+<!-- MODAL FOTO -->
+<div class="modal" id="modal">
+  <span class="close-btn" onclick="cerrarModal()">×</span>
+  <div class="modal-img-wrap">
+    <img id="modalImg" src="" alt="Foto" />
+  </div>
+  <div class="modal-meta">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-date" id="modalDate"></div>
+    <div class="modal-note" id="modalNote"></div>
+  </div>
+  <div class="modal-actions">
+    <label class="modal-action-btn" style="cursor:pointer">
+      🔄 Cambiar foto
+      <input type="file" accept="image/*" style="display:none" onchange="cambiarDesdeModal(event)">
+    </label>
+    <button class="modal-action-btn danger" onclick="eliminarDesdeModal()">🗑️ Eliminar</button>
+  </div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="note-modal" id="noteModal">
+  <div class="note-box">
+    <h3>📝 Cuéntanos sobre este momento</h3>
+    <label>¿Cuándo fue?</label>
+    <input type="date" id="noteDate" style="margin-bottom:14px">
+    <label>Una nota especial (opcional)</label>
+    <textarea id="noteText" placeholder="Escribe algo que recuerdes de este momento..."></textarea>
+    <div class="note-actions">
+      <button class="btn-cancel" onclick="cancelarNota()">Saltar</button>
+      <button class="btn-save" onclick="guardarNota()">Guardar 💖</button>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDESHOW -->
+<div class="slideshow-modal" id="slideshowModal">
+  <span class="ss-close" onclick="cerrarSlideshow()">×</span>
+  <div class="ss-counter" id="ssCounter"></div>
+  <img class="ss-img" id="ssImg" src="" alt="">
+  <div class="ss-meta">
+    <div class="ss-title" id="ssTitle"></div>
+    <div class="ss-note" id="ssNote"></div>
+  </div>
+  <div class="ss-controls">
+    <button class="ss-btn" onclick="ssPrev()">← Anterior</button>
+    <button class="ss-btn" id="ssPlayBtn" onclick="toggleAutoplay()">⏸ Pausar</button>
+    <button class="ss-btn" onclick="ssNext()">Siguiente →</button>
+  </div>
+</div>
+
+<script>
+const categorias = {
+  "❤️ Románticos": [
+    "Beso al atardecer","Abrazados bajo una manta","Dándose un beso en la frente",
+    "Caminando de la mano","Mirándose a los ojos","Cena con velas","Compartiendo un café",
+    "Sonriendo con los ojos cerrados","En la cama, mirándose","Acariciando el rostro del otro",
+    "Escribiendo una carta de amor","En la playa al anochecer","Bailando lento","Llevando flores",
+    "En una banca del parque","Dibujando un corazón juntos","Poniéndose la mano en el pecho",
+    "Tomados de la cintura","Cantándose una canción","Compartiendo un postre",
+    "Tapándose con una sola bufanda","Cruzando miradas cómplices","Tocándose las narices",
+    "Con una foto polaroid entre los labios","Haciendo un picnic","Leyendo juntos un libro de amor"
+  ],
+  "🤪 Locos": [
+    "Imitando una escena de película","Con la ropa del otro","Bailando como locos en la calle",
+    "Sacando la lengua los dos","Usando disfraces ridículos","Jugando con espuma de afeitar",
+    "Posando como superhéroes","Foto bajo la ducha con ropa","Uno cargando al otro sin sentido",
+    "Poniéndose caras de monstruo","Sosteniendo objetos como micrófonos","Con calcetines en las manos",
+    "En la cocina haciendo un desastre","Fotos con ropa al revés","Jugando con pintura de dedos",
+    "Enfundados en sábanas como fantasmas","Con gafas gigantes","Haciendo muecas extremas",
+    "Usando filtros absurdos","En el suelo como si se hubieran caído","Imitando emojis",
+    "En una posición de yoga imposible","Simulando estar atrapados","Como si fueran personajes de anime",
+    "Como si acabaran de pelear falsamente dramáticos"
+  ],
+  "🌿 Naturales": [
+    "Caminando por un sendero","Tocando hojas o flores","Bajo un árbol grande",
+    "Sentados en una roca","Mojándose con lluvia suave","En la arena, sin zapatos",
+    "Sosteniendo frutas del campo","Entre plantas altas","Al lado de un río",
+    "Mirando al horizonte","Con los pies sumergidos en agua","En una hamaca",
+    "Con el viento alborotando el cabello","Junto a una fogata","Tocando la corteza de un árbol",
+    "Con un animalito silvestre","Mirando las nubes tumbados","Sosteniendo una flor",
+    "Caminando descalzos","Con hojas secas en las manos","A la sombra de un árbol",
+    "Acariciando la tierra","Tocando el agua con los dedos","Sentados sobre el pasto",
+    "En una cabaña o lugar rústico"
+  ],
+  "😂 Divertidos": [
+    "Haciendo burbujas de jabón","Jugando a hacerse cosquillas","Saltando juntos",
+    "Foto en medio de una carcajada","Corriendo con un globo","Inflando los cachetes",
+    "Comiendo algo y manchándose","Simulando una pelea de almohadas","Jugando con plastilina",
+    "Con gafas de sol grandes","Haciendo una torre humana","Bailando en pijama",
+    "Haciendo como si uno fuera un zombi","Jugando a ver quién se ríe primero",
+    "Tomando helado de forma exagerada","Cantando a gritos","Foto mientras juegan cartas o dados",
+    "Simulando ser chefs famosos","Riéndose de una caída falsa","Disfrazados de abuelitos",
+    "Jugando con confeti","Haciendo una cara seria por competencia","Haciendo una burbuja con chicle",
+    "Tapándose los ojos el uno al otro","Foto en una carrera de cucharas y huevo"
+  ]
+};
+
+let categoriaActual = Object.keys(categorias)[0];
+let momentoActual = null;
+let pendingMomento = null;
+let pendingImgData = null;
+
+// Storage (cloud, shared with whoever opens this link)
+let datos = {};
+let dataReady = false;
+
+async function cargarDatosCloud() {
+  try {
+    const r = await fetch('/api/data');
+    if (!r.ok) throw new Error('No se pudo cargar');
+    datos = await r.json();
+  } catch (e) {
+    console.error(e);
+    datos = {};
+    alert('No se pudieron cargar los recuerdos guardados. Revisa tu conexión y recarga la página.');
+  }
+  dataReady = true;
+  render();
+}
+
+async function save() {
+  try {
+    const r = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    });
+    if (!r.ok) throw new Error('No se pudo guardar');
+  } catch (e) {
+    console.error(e);
+    alert('No se pudo guardar en la nube. Revisa tu conexión e inténtalo de nuevo.');
+  }
+}
+
+async function subirFotoCloud(momento, dataUrl) {
+  const r = await fetch('/api/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: momento, dataUrl })
+  });
+  if (!r.ok) throw new Error('No se pudo subir la foto');
+  const json = await r.json();
+  return json.url;
+}
+
+function borrarFotoCloud(momento) {
+  // fire-and-forget: no need to block the UI on storage cleanup
+  fetch('/api/delete-photo', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: momento })
+  }).catch(() => {});
+}
+
+function mostrarSubiendo(show) {
+  document.body.style.cursor = show ? 'progress' : '';
+  document.querySelectorAll('input[type=file]').forEach(i => i.disabled = show);
+}
+
+// --- PORTADA ---
+function cargarPortada(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    compressImage(r.result, async (compressed) => {
+      try {
+        mostrarSubiendo(true);
+        const url = await subirFotoCloud('__portada__', compressed);
+        datos.__portada__ = url;
+        await save();
+        renderPortada();
+      } catch (err) {
+        alert('No se pudo subir la portada. Revisa tu conexión e inténtalo de nuevo.');
+      } finally {
+        mostrarSubiendo(false);
+      }
+    });
+  };
+  r.readAsDataURL(file);
+}
+
+function renderPortada() {
+  const wrap = document.getElementById("coverWrap");
+  if (datos.__portada__) {
+    wrap.innerHTML = `
+      <div class="cover-wrap-inner">
+        <img class="cover-photo" src="${datos.__portada__}" alt="Portada" onclick="document.getElementById('coverInput').click()">
+        <button class="cover-delete-btn" onclick="eliminarPortada()" title="Eliminar portada">×</button>
+      </div>`;
+  } else {
+    wrap.innerHTML = `<div class="cover-placeholder" id="coverPlaceholder" onclick="document.getElementById('coverInput').click()">📷<span>Portada</span></div>`;
+  }
+}
+
+async function eliminarPortada() {
+  if (!datos.__portada__) return;
+  if (!confirm("¿Eliminar la foto de portada?")) return;
+  delete datos.__portada__;
+  await save();
+  borrarFotoCloud('__portada__');
+  renderPortada();
+}
+
+// --- DARK MODE ---
+let dark = localStorage.getItem("amor101dark") === "1";
+function applyDark() {
+  document.body.classList.toggle("dark", dark);
+  document.getElementById("darkToggle").textContent = dark ? "☀️" : "🌙";
+  localStorage.setItem("amor101dark", dark ? "1" : "0");
+}
+document.getElementById("darkToggle").onclick = () => { dark = !dark; applyDark(); };
+
+// --- COMPRESS IMAGE ---
+function compressImage(dataURL, cb) {
+  const img = new Image();
+  img.onload = () => {
+    const max = 900;
+    let w = img.width, h = img.height;
+    if (w > max || h > max) {
+      const ratio = Math.min(max/w, max/h);
+      w = Math.round(w * ratio); h = Math.round(h * ratio);
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+    cb(canvas.toDataURL("image/jpeg", 0.82));
+  };
+  img.src = dataURL;
+}
+
+// --- PROGRESS ---
+function totalDone() { return Object.keys(datos).filter(k => k !== "__portada__" && datos[k]?.img).length; }
+
+function updateProgress() {
+  const total = 101;
+  const done = totalDone();
+  document.getElementById("progressCount").textContent = `${done} / ${total} momentos`;
+  document.getElementById("progressFill").style.width = (done / total * 100) + "%";
+
+  const cats = categorias[categoriaActual];
+  const catDone = cats.filter(m => datos[m]?.img).length;
+  document.getElementById("catFill").style.width = (catDone / cats.length * 100) + "%";
+  document.getElementById("catText").textContent = `${catDone} / ${cats.length}`;
+}
+
+// --- CONFETTI ---
+function lanzarConfetti() {
+  const canvas = document.getElementById("confetti-canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = Array.from({length: 80}, () => ({
+    x: Math.random() * canvas.width,
+    y: -20,
+    r: Math.random() * 6 + 3,
+    d: Math.random() * 6 + 2,
+    color: ["#e8547a","#f28fa8","#d4a96a","#f5d0a9","#c0395a","#fde8ef"][Math.floor(Math.random()*6)],
+    tilt: Math.random() * 10 - 5,
+    tiltSpd: Math.random() * 0.3 + 0.1,
+    alpha: 1
+  }));
+
+  let frame;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.y < canvas.height + 20) { alive = true; }
+      p.y += p.d; p.tilt += p.tiltSpd;
+      p.alpha = Math.max(0, p.alpha - 0.007);
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.r, p.r*0.5, p.tilt, 0, Math.PI*2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      ctx.restore();
+      p.x += Math.sin(p.y / 30) * 1.2;
+    });
+    if (alive) frame = requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  if (frame) cancelAnimationFrame(frame);
+  draw();
+}
+
+// --- NOTE MODAL ---
+function abrirNoteModal(momento, imgData) {
+  pendingMomento = momento;
+  pendingImgData = imgData;
+  document.getElementById("noteDate").value = new Date().toISOString().split("T")[0];
+  document.getElementById("noteText").value = "";
+  document.getElementById("noteModal").classList.add("active");
+}
+
+async function guardarNota() {
+  if (!pendingMomento) return;
+  const date = document.getElementById("noteDate").value;
+  const note = document.getElementById("noteText").value.trim();
+  datos[pendingMomento] = { img: pendingImgData, date, note };
+  await save();
+  pendingMomento = null; pendingImgData = null;
+  document.getElementById("noteModal").classList.remove("active");
+  lanzarConfetti();
+  render();
+}
+
+async function cancelarNota() {
+  if (pendingMomento && pendingImgData) {
+    datos[pendingMomento] = { img: pendingImgData, date: "", note: "" };
+    await save();
+    lanzarConfetti();
+    render();
+  }
+  pendingMomento = null; pendingImgData = null;
+  document.getElementById("noteModal").classList.remove("active");
+}
+
+// --- CARGAR IMAGEN ---
+function cargarImagen(event, momento) {
+  const file = event.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    compressImage(r.result, async (compressed) => {
+      try {
+        mostrarSubiendo(true);
+        const url = await subirFotoCloud(momento, compressed);
+        abrirNoteModal(momento, url);
+        momentoActual = null;
+        document.getElementById("momentoActual").innerHTML = "";
+      } catch (err) {
+        alert('No se pudo subir la foto. Revisa tu conexión e inténtalo de nuevo.');
+      } finally {
+        mostrarSubiendo(false);
+      }
+    });
+  };
+  r.readAsDataURL(file);
+}
+
+// --- TABS ---
+function renderTabs() {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+  Object.keys(categorias).forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "tab" + (cat === categoriaActual ? " active" : "");
+    const done = categorias[cat].filter(m => datos[m]?.img).length;
+    btn.innerHTML = `${cat}<span class="tab-prog">${done}/${categorias[cat].length}</span>`;
+    btn.onclick = () => {
+      categoriaActual = cat; momentoActual = null;
+      document.getElementById("momentoActual").innerHTML = "";
+      render();
+    };
+    tabs.appendChild(btn);
+  });
+}
+
+// --- ALBUM ---
+function renderAlbum() {
+  const album = document.getElementById("album");
+  album.innerHTML = "";
+  categorias[categoriaActual].forEach((momento, idx) => {
+    const slot = document.createElement("div");
+    slot.className = "slot" + (datos[momento]?.img ? " filled" : "");
+
+    if (datos[momento]?.img) {
+      const img = document.createElement("img");
+      img.src = datos[momento].img;
+      img.alt = momento;
+      slot.appendChild(img);
+
+      if (datos[momento].date) {
+        const badge = document.createElement("div");
+        badge.className = "slot-date-badge";
+        badge.textContent = formatDate(datos[momento].date);
+        slot.appendChild(badge);
+      }
+
+      const ov = document.createElement("div");
+      ov.className = "slot-overlay";
+      ov.innerHTML = `
+        <div class="slot-overlay-name">${momento}</div>
+        <div class="slot-overlay-actions">
+          <button class="ov-btn" onclick="abrirModal('${momento}')">Ver</button>
+          <label class="ov-btn" style="cursor:pointer">
+            Cambiar <input type="file" accept="image/*" onchange="cargarImagen(event,'${momento.replace(/'/g,"\\'")}')">
+          </label>
+          <button class="ov-btn" onclick="eliminarFoto('${momento.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      `;
+      slot.appendChild(ov);
+      slot.onclick = (e) => {
+        if (e.target.tagName !== "BUTTON" && e.target.tagName !== "INPUT" && e.target.tagName !== "LABEL") {
+          abrirModal(momento);
+        }
+      };
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "slot-empty";
+      empty.innerHTML = `<div class="slot-number">${idx+1}</div><div class="slot-name">${momento}</div>`;
+      slot.appendChild(empty);
+
+      const lbl = document.createElement("label");
+      lbl.className = "slot-upload-label";
+      const inp = document.createElement("input");
+      inp.type = "file"; inp.accept = "image/*";
+      inp.onchange = e => cargarImagen(e, momento);
+      lbl.appendChild(inp);
+      slot.appendChild(lbl);
+    }
+    album.appendChild(slot);
+  });
+}
+
+function formatDate(d) {
+  if (!d) return "";
+  const [y,m,day] = d.split("-");
+  return `${day}/${m}/${y}`;
+}
+
+// --- LIST ---
+function renderLista() {
+  const lista = document.getElementById("listaMomentos");
+  lista.innerHTML = "";
+  categorias[categoriaActual].forEach(m => {
+    const li = document.createElement("li");
+    li.textContent = m;
+    if (datos[m]?.img) li.className = "done";
+    lista.appendChild(li);
+  });
+}
+
+// --- SURPRISE ---
+function sorprenderMomento() {
+  const disponibles = categorias[categoriaActual].filter(m => !datos[m]?.img);
+  if (!disponibles.length) {
+    document.getElementById("momentoActual").innerHTML =
+      `<div class="moment-card"><div class="mc-title">🏆 ¡Categoría completa!</div></div>`;
+    return;
+  }
+  momentoActual = disponibles[Math.floor(Math.random() * disponibles.length)];
+  document.getElementById("momentoActual").innerHTML = `
+    <div class="moment-card">
+      <div class="mc-title">${momentoActual}</div>
+      <label class="mc-upload-label">
+        📷 Subir foto de este momento
+        <input type="file" accept="image/*" onchange="subirFotoActual(event)" />
+      </label>
+    </div>
+  `;
+}
+
+function subirFotoActual(e) {
+  if (!momentoActual) return;
+  cargarImagen(e, momentoActual);
+}
+
+// --- MODAL ---
+let modalMomentoActual = null;
+
+function abrirModal(momento) {
+  const d = datos[momento];
+  if (!d?.img) return;
+  modalMomentoActual = momento;
+  document.getElementById("modalImg").src = d.img;
+  document.getElementById("modalTitle").textContent = momento;
+  document.getElementById("modalDate").textContent = d.date ? `📅 ${formatDate(d.date)}` : "";
+  document.getElementById("modalNote").textContent = d.note ? `"${d.note}"` : "";
+  document.getElementById("modal").classList.add("active");
+}
+
+function cerrarModal() {
+  document.getElementById("modal").classList.remove("active");
+  modalMomentoActual = null;
+}
+document.getElementById("modal").onclick = function(e) {
+  if (e.target === this) cerrarModal();
+};
+
+// --- ELIMINAR / CAMBIAR FOTO ---
+async function eliminarFoto(momento) {
+  if (!datos[momento]?.img) return;
+  if (!confirm(`¿Eliminar la foto de "${momento}"? Podrás volver a subir otra cuando quieras.`)) return;
+  delete datos[momento];
+  await save();
+  borrarFotoCloud(momento);
+  render();
+}
+
+function cambiarDesdeModal(event) {
+  if (!modalMomentoActual) return;
+  const momento = modalMomentoActual;
+  cerrarModal();
+  cargarImagen(event, momento);
+}
+
+function eliminarDesdeModal() {
+  if (!modalMomentoActual) return;
+  const momento = modalMomentoActual;
+  cerrarModal();
+  eliminarFoto(momento);
+}
+
+// --- SLIDESHOW ---
+let ssItems = [];
+let ssIdx = 0;
+let ssTimer = null;
+
+document.getElementById("slideshowBtn").onclick = () => {
+  ssItems = [];
+  Object.entries(datos).forEach(([k,v]) => {
+    if (k !== "__portada__" && v?.img) ssItems.push({key:k, ...v});
+  });
+  if (!ssItems.length) { alert("Aún no tienen fotos guardadas 💕"); return; }
+  ssIdx = 0;
+  document.getElementById("slideshowModal").classList.add("active");
+  ssShow();
+  ssAutoplay();
+};
+
+function ssShow() {
+  const item = ssItems[ssIdx];
+  document.getElementById("ssImg").src = item.img;
+  document.getElementById("ssTitle").textContent = item.key;
+  document.getElementById("ssNote").textContent = item.note ? `"${item.note}"` : (item.date ? formatDate(item.date) : "");
+  document.getElementById("ssCounter").textContent = `${ssIdx+1} / ${ssItems.length}`;
+}
+
+function ssNext() { ssIdx = (ssIdx+1) % ssItems.length; ssShow(); }
+function ssPrev() { ssIdx = (ssIdx - 1 + ssItems.length) % ssItems.length; ssShow(); }
+
+let ssPlaying = true;
+function ssAutoplay() {
+  clearInterval(ssTimer);
+  if (ssPlaying) ssTimer = setInterval(ssNext, 3500);
+}
+function toggleAutoplay() {
+  ssPlaying = !ssPlaying;
+  document.getElementById("ssPlayBtn").textContent = ssPlaying ? "⏸ Pausar" : "▶ Reanudar";
+  ssAutoplay();
+}
+function cerrarSlideshow() {
+  clearInterval(ssTimer);
+  document.getElementById("slideshowModal").classList.remove("active");
+}
+
+// --- MAIN RENDER ---
+function render() {
+  renderPortada();
+  renderTabs();
+  updateProgress();
+  renderAlbum();
+  renderLista();
+}
+
+applyDark();
+cargarDatosCloud();
+</script>
+</body>
+</html>
